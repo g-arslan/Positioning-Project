@@ -1,0 +1,6 @@
+## File-based project format:
+*.iws
+
+*.sqlite3
+*.pyc
+
