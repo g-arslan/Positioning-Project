@@ -17,6 +17,8 @@ def submit_data(request):
                 sub_datetime=timezone.now(),
                 data_file=request.FILES['data_file']
             )
+            request.user.submissions_count += 1
+            request.user.save()
             instance.save()
             return redirect('submit_success')
     else:
