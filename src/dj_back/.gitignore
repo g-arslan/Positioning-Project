@@ -16,3 +16,9 @@ fabric.properties
 is_production.py
 venv/
 
+## File-based project format:
+*.iws
+
+*.sqlite3
+*.pyc
+
