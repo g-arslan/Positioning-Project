@@ -1,8 +1,11 @@
+import threading
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
+from get_data_form.data_process.file_process import FileProcessing
 from get_data_form.models import Submission
 from .forms import SubmissionForm
 
@@ -10,7 +13,6 @@ from .forms import SubmissionForm
 def submit_data(request):
     if request.method == 'POST':
         form = SubmissionForm(request.POST, request.FILES)
-        print(form.is_valid())
         if form.is_valid():
             instance = Submission(
                 user=request.user,
@@ -20,7 +22,9 @@ def submit_data(request):
             request.user.submissions_count += 1
             request.user.save()
             instance.save()
-            return redirect('submit_success')
+            threading.Thread(target=FileProcessing().process_file, args={'submission': instance})
+            return render(request, 'get_data_form/submit_success.html')
+            # return redirect('submit_success')
     else:
         form = SubmissionForm()
     return render(request, 'get_data_form/submit_data.html', {'form': form})

@@ -28,4 +28,7 @@ class Submission(models.Model):
 
 class Result(models.Model):
     submission = models.ForeignKey(Submission, on_delete=models.DO_NOTHING)
-    # TODO: fields that lead to result
+    result_file = models.FileField()
+
+    def __str__(self):
+        return str(self.submission)
