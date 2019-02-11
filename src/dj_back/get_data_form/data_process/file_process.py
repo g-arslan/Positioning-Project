@@ -10,7 +10,6 @@ from ..models import Result
 
 CONFIG_FILE = 'config.ini'
 PATH_TO_FILE_KEY = 'path'
-RESULT_FILENAME = 'result.txt'
 RESULT_STORE_FOLDER_NAME = 'playground'
 
 logger = logging.getLogger(__name__)
@@ -34,7 +33,7 @@ class FileProcessing:
         )
 
         result = subprocess.run(
-            [os.path.join(workdir, settings.PROCESS_NAME)],
+            [os.path.join(workdir, settings.PROCESS_NAME), CONFIG_FILE],
             universal_newlines=True,
             cwd=workdir,
         )
@@ -49,7 +48,8 @@ class FileProcessing:
 
         instance = Result()
         instance.submission = submission
-        instance.result_file.name = os.path.join(RESULT_STORE_FOLDER_NAME, str(submission.id), RESULT_FILENAME)
+        instance.result_sol.name = os.path.join(RESULT_STORE_FOLDER_NAME, str(submission.id), "result.sol")
+        instance.stats_rtk.name = os.path.join(RESULT_STORE_FOLDER_NAME, str(submission.id), "stats.rtk")
         instance.save()
 
         logger.info('Finished processing "{data_file}"'.format(data_file=submission.data_file.name))

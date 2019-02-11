@@ -22,7 +22,7 @@ def submit_data(request):
             request.user.submissions_count += 1
             request.user.save()
             instance.save()
-            threading.Thread(target=FileProcessing().process_file, args={'submission': instance})
+            threading.Thread(target=FileProcessing().process_file, args=(instance,)).start()
             return render(request, 'get_data_form/submit_success.html')
             # return redirect('submit_success')
     else:

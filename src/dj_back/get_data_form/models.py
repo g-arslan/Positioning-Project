@@ -28,7 +28,9 @@ class Submission(models.Model):
 
 class Result(models.Model):
     submission = models.ForeignKey(Submission, on_delete=models.DO_NOTHING)
-    result_file = models.FileField()
+    result_sol = models.FileField()
+    stats_rtk = models.FileField()
+
 
     def __str__(self):
         return str(self.submission)

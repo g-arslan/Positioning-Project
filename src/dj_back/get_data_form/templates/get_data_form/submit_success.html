@@ -7,5 +7,8 @@
 
 {% block body %}
     <h2>Success</h2>
-    Your file was uploaded
+    Your file was uploaded,
+    <a href="{% url 'submit_data' %}"> submit another one?</a>
+    <br>
+    <a href="{% url 'logout' %}">Logout</a>
 {% endblock %}

@@ -3,14 +3,20 @@
 #include <string>
 #include <unistd.h>
 
-const std::string CONFIG_FILE = "config.ini";
 const std::string PATH_TO_FILE_KEY = "path";
 
-int main() {
-    std::ifstream iniFile(CONFIG_FILE);
+int main(int argc, char **argv) {
+    if (argc < 2) {
+        std::cerr << "No config file provided\n";
+        return 1;
+    }
+
+    std::string config_path = argv[1];
+
+    std::ifstream iniFile(config_path);
 
     if (!iniFile.good()) {
-        std::cerr << "There is no \"" + CONFIG_FILE + "\" found\n";
+        std::cerr << "There is no \"" + config_path + "\" found\n";
         return 1;
     }
 
@@ -37,7 +43,7 @@ int main() {
     }
 
     if (!found) {
-        std::cerr << "There is no \"" + PATH_TO_FILE_KEY + "\" key in \"" + CONFIG_FILE + "\"\n";
+        std::cerr << "There is no \"" + PATH_TO_FILE_KEY + "\" key in \"" + config_path + "\"\n";
         return 1;
     }
 
@@ -53,8 +59,11 @@ int main() {
     int sec = rand() % 7 + 1;
     sleep(sec);
 
-    std::ofstream resFile("result.txt");
-    resFile << "Something happened\n";
+    std::ofstream resSolFile("result.sol");
+    resSolFile << "Some result.sol\n";
+
+    std::ofstream statsFile("stats.rtk");
+    statsFile << "Some stats\n";
 
     return 0;
 }
