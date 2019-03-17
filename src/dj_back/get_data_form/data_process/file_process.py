@@ -15,7 +15,7 @@ RESULT_STORE_FOLDER_NAME = 'playground'
 logger = logging.getLogger(__name__)
 
 class FileProcessing:
-    def process_file(self, submission):
+    def process_file(self, submission, instance):
         workdir = os.path.join(settings.MEDIA_ROOT, RESULT_STORE_FOLDER_NAME, str(submission.id))
         os.makedirs(workdir)
 
@@ -39,6 +39,8 @@ class FileProcessing:
         )
 
         if result.returncode != 0:
+            instance.status = 'E'
+            instance.save()
             logger.error('Failure while parsing file {filename}, exit code is {exitcode}, stderr: {stderr}'.format(
                 filename=submission.data_file.name,
                 exitcode=result.returncode,
@@ -46,10 +48,9 @@ class FileProcessing:
             ))
             return
 
-        instance = Result()
-        instance.submission = submission
         instance.result_sol.name = os.path.join(RESULT_STORE_FOLDER_NAME, str(submission.id), "result.sol")
         instance.stats_rtk.name = os.path.join(RESULT_STORE_FOLDER_NAME, str(submission.id), "stats.rtk")
+        instance.status = 'D'
         instance.save()
 
         logger.info('Finished processing "{data_file}"'.format(data_file=submission.data_file.name))
