@@ -39,7 +39,7 @@ class FileProcessing:
         )
 
         if result.returncode != 0:
-            instance.status = 'E'
+            instance.status = Result.ERROR
             instance.save()
             logger.error('Failure while parsing file {filename}, exit code is {exitcode}, stderr: {stderr}'.format(
                 filename=submission.data_file.name,
@@ -50,7 +50,7 @@ class FileProcessing:
 
         instance.result_csv.name = os.path.join(RESULT_STORE_FOLDER_NAME, str(submission.id), "result.csv")
         instance.result_pdf.name = os.path.join(RESULT_STORE_FOLDER_NAME, str(submission.id), "result.pdf")
-        instance.status = 'D'
+        instance.status = Result.DONE
         instance.save()
 
         logger.info('Finished processing "{data_file}"'.format(data_file=submission.data_file.name))
