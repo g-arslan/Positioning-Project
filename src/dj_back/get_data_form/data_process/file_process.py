@@ -48,8 +48,8 @@ class FileProcessing:
             ))
             return
 
-        instance.result_sol.name = os.path.join(RESULT_STORE_FOLDER_NAME, str(submission.id), "result.sol")
-        instance.stats_rtk.name = os.path.join(RESULT_STORE_FOLDER_NAME, str(submission.id), "stats.rtk")
+        instance.result_csv.name = os.path.join(RESULT_STORE_FOLDER_NAME, str(submission.id), "result.csv")
+        instance.result_pdf.name = os.path.join(RESULT_STORE_FOLDER_NAME, str(submission.id), "result.pdf")
         instance.status = 'D'
         instance.save()
 

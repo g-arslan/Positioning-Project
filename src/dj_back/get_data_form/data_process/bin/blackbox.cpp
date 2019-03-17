@@ -59,10 +59,10 @@ int main(int argc, char **argv) {
     int sec = rand() % 7 + 1;
     sleep(sec);
 
-    std::ofstream resSolFile("result.sol");
+    std::ofstream resSolFile("result.csv");
     resSolFile << "Some result.sol\n";
 
-    std::ofstream statsFile("stats.rtk");
+    std::ofstream statsFile("result.pdf");
     statsFile << "Some stats\n";
 
     return 0;

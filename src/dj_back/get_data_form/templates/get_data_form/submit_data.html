@@ -16,4 +16,33 @@
 
     <br>
     <a href="{% url 'logout' %}">Logout</a>
+
+    <h2>History</h2>
+
+    {% load tz %}
+    {% get_current_timezone as TIME_ZONE %}
+
+    <table>
+    <tr>
+        <th>Filename</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>.csv</th>
+    </tr>
+    {% for res in results %}
+        <tr>
+            <td>{{ res.submission.filename }}</td>
+            <td>{{ res.submission.sub_datetime|timezone:"Europe/Moscow" }}</td>
+            <td>{{ res.status }}</td>
+            <td>
+                {% ifequal res.status "Done" %}
+                    <a href="{{ res.result_csv }}">get</a>
+                {% else %}
+                    Not done yet
+                {% endifequal %}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+
 {% endblock %}
