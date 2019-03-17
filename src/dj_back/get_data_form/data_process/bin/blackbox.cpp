@@ -1,9 +1,10 @@
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <unistd.h>
 
-const std::string PATH_TO_FILE_KEY = "path";
+const std::string PATH_TO_FILE_KEY = "RoverFile";
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -35,6 +36,11 @@ int main(int argc, char **argv) {
         if (equal == -1) continue;
 
         std::string key = line.substr(0, equal), value = line.substr(equal + 1, (int)line.size() - equal - 1);
+
+        while (key.back() == ' ') key.pop_back();
+        reverse(value.begin(), value.end());
+        while (value.back() == ' ') value.pop_back();
+        reverse(value.begin(), value.end());
 
         if (key == PATH_TO_FILE_KEY) {
             found = true;

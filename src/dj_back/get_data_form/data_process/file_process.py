@@ -1,9 +1,9 @@
 import os
-from shutil import copy
 import subprocess
 import logging
 
 from django.conf import settings
+from django.template.loader import render_to_string
 from django.core.files import File
 
 from ..models import Result
@@ -19,13 +19,14 @@ class FileProcessing:
         workdir = os.path.join(settings.MEDIA_ROOT, RESULT_STORE_FOLDER_NAME, str(submission.id))
         os.makedirs(workdir)
 
-        copy(os.path.join(settings.BIN_ROOT, CONFIG_FILE), workdir)
-        config = open(os.path.join(workdir, CONFIG_FILE), 'a')
-        config.write('\n{key}={value}\n'.format(
-            key=PATH_TO_FILE_KEY,
-            value=os.path.join(workdir, os.path.basename(submission.data_file.name)),
-        ))
-        config.close()
+        config = {}
+        config['RoverFile'] = os.path.basename(submission.data_file.name)
+        # config['RoverFile'] = os.path.join(workdir, os.path.basename(submission.data_file.name))
+        config['OutputDir'] = '.'
+        config['RoverAntID'] = submission.antenna
+
+        with open(os.path.join(workdir, CONFIG_FILE), 'w') as configfile:
+            configfile.write(render_to_string('get_data_form/default.ini', config))
 
         os.symlink(os.path.join(settings.BIN_ROOT, settings.PROCESS_NAME), os.path.join(workdir, settings.PROCESS_NAME))
         os.symlink(os.path.join(settings.MEDIA_ROOT, submission.data_file.name),
