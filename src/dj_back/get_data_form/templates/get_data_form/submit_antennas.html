@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block body %}
+    Внимание! После этого действия текущие антенны будут заменены.
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}

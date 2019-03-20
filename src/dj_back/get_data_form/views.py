@@ -41,7 +41,8 @@ def submit_data(request):
     data = {'results': list(Result.objects.filter(submission__user=request.user).order_by('-submission__sub_datetime'))}
     for i in range(len(data['results'])):
         data['results'][i].status = Result.STATUS_CHOICES_TEXT[data['results'][i].status]
-        data['results'][i].result_csv = reverse('get_file') + '?res_id={res_id}'.format(res_id=data['results'][i].id)
+        data['results'][i].result_csv = reverse('get_file') + '?res_id={res_id}&type=csv'.format(res_id=data['results'][i].id)
+        data['results'][i].result_pdf = reverse('get_file') + '?res_id={res_id}&type=pdf'.format(res_id=data['results'][i].id)
     data['form'] = SubmissionForm()
     return render(request, 'get_data_form/submit_data.html', data)
 
@@ -50,9 +51,13 @@ def submit_data(request):
 def get_file(request):
     try:
         res_id = request.GET['res_id']
+        type = request.GET['type']
         result = Result.objects.filter(id=res_id).first()
         if result.submission.user == request.user:
-            return FileResponse(result.result_csv, as_attachment=True)
+            if type == 'csv':
+                return FileResponse(result.result_csv, as_attachment=True)
+            elif type == 'pdf':
+                return FileResponse(result.result_pdf, as_attachment=True)
         return redirect('submit_data')
     except Exception as e:
         logger.warning('File download failed: ' + str(e))
@@ -62,7 +67,6 @@ def get_file(request):
 @login_required()
 def upload_antennas(request):
     if not request.user.is_superuser:
-        logger.info('here')
         return redirect('submit_data')
 
     if request.method == 'POST':

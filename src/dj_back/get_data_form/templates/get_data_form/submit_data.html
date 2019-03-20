@@ -28,6 +28,7 @@
         <th>Time</th>
         <th>Status</th>
         <th>.csv</th>
+        <th>.pdf</th>
     </tr>
     {% for res in results %}
         <tr>
@@ -37,6 +38,13 @@
             <td>
                 {% ifequal res.status "Done" %}
                     <a href="{{ res.result_csv }}">get</a>
+                {% else %}
+                    Not done yet
+                {% endifequal %}
+            </td>
+            <td>
+                {% ifequal res.status "Done" %}
+                    <a href="{{ res.result_pdf }}">get</a>
                 {% else %}
                     Not done yet
                 {% endifequal %}

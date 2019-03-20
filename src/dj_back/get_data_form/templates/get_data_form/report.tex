@@ -1,0 +1,124 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage{cmap} % Пакет для поиска в полученной пдфке
+\usepackage[utf8]{inputenc} % Замена кодировки файла на utf8
+\usepackage[T2A]{fontenc} % Подключение кодировки шрифтов
+\usepackage[russian]{babel} % Использование русского языка
+\usepackage[left=2cm, right=2cm, top=1cm, bottom=2cm]{geometry} % Изменение размеров полей
+\usepackage{amsmath, amsfonts, amsthm, mathtools, amssymb, icomma, units, yfonts}
+\usepackage{tikz}
+\usetikzlibrary{calc,matrix}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.9}
+
+\begin{document}
+	\title{Отчет}
+	\date{}
+	\maketitle
+
+	\noindent
+	\begin{tabular}{|c|c|c|}
+		\hline
+		$\xi$ & $\textbf{E}(\xi)$ &  $\textbf{COV}(\xi)$\\ \hline
+		$\textbf{X}$ & ${{ xavg }}$ & ${{ xcov }}$ \\ \hline
+		$\textbf{Y}$ & ${{ yavg }}$ & ${{ ycov }}$ \\ \hline
+		$\textbf{Z}$ & ${{ zavg }}$ & ${{ zcov }}$ \\ \hline
+	\end{tabular}\\ \\ \\
+	$\textbf{E}(\xi)$ - математическое ожидание величины;
+	$\textbf{COV}(\xi)$ - ковариация величины\\ \\
+
+
+
+    \begin{center}
+	\begin{tikzpicture}
+		\begin{axis}
+			[
+			title = $\text{Количество спутников в зависимости от времени}$,
+			xlabel = {$\textbf{time}$},
+			ylabel = {$\textbf{number of satellites}$},
+			xmin = { {{ time_min }} },
+			xmax = { {{ time_max }} },
+			ymin = { {{ sat_min }} },
+			ymax = { {{ sat_max }} },
+			width = {400pt},
+			minor tick num = 5
+			]
+			\addplot[blue] coordinates {
+            {% for point in data %}({{ point.time }}, {{ point.sat_count }}) {% endfor %}
+			};
+		\end{axis}
+	\end{tikzpicture}
+	\end{center}
+
+\newpage
+
+    \begin{center}
+	\begin{tikzpicture}
+		\begin{axis}
+			[
+			title = $\text{Зависимость координаты Х от времени}$,
+			xlabel = {$\textbf{time}$},
+			ylabel = {$\textbf{coordinate X}$},
+			xmin = { {{ time_min }} },
+			xmax = { {{ time_max }} },
+			ymin = { {{ x_min }} },
+			ymax = { {{ x_max }} },
+			width = {400pt},
+			minor tick num = 2
+			]
+			\addplot[red] coordinates {
+			{% for point in data %}({{ point.time }}, {{ point.x }}) {% endfor %}
+			};
+	\end{axis}
+	\end{tikzpicture}
+	\end{center}
+
+	\:
+    \begin{center}
+	\begin{tikzpicture}
+		\begin{axis}
+			[
+			title = $\text{Зависимость координаты Y от времени}$,
+			xlabel = {$\textbf{time}$},
+			ylabel = {$\textbf{coordinate Y}$},
+			xmin = { {{ time_min }} },
+			xmax = { {{ time_max }} },
+			ymin = { {{ y_min }} },
+			ymax = { {{ y_max }} },
+			width = {400pt},
+			minor tick num = 2
+			]
+			\addplot[green] coordinates {
+			{% for point in data %}({{ point.time }}, {{ point.y }}) {% endfor %}
+			};
+	\end{axis}
+	\end{tikzpicture}
+	\end{center}
+
+	\newpage
+
+	\begin{center}
+		\begin{tikzpicture}
+		\begin{axis}
+			[
+			title = $\text{Зависимость координаты Z от времени}$,
+			xlabel = {$\textbf{time}$},
+			ylabel = {$\textbf{coordinate Z}$},
+			xmin = { {{ time_min }} },
+			xmax = { {{ time_max }} },
+			ymin = { {{ z_min }} },
+			ymax = { {{ z_max }} },
+			width = {400pt},
+			minor tick num = 2
+			]
+			\addplot[black] coordinates {
+			{% for point in data %}({{ point.time }}, {{ point.z }}) {% endfor %}
+			};
+		\end{axis}
+		\end{tikzpicture}
+	\end{center}
+
+
+
+\end{document}
+

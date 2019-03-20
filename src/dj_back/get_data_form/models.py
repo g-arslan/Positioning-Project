@@ -51,8 +51,8 @@ class Result(models.Model):
     STATUS_CHOICES_TEXT = dict(STATUS_CHOICES)
 
     submission = models.ForeignKey(Submission, on_delete=models.DO_NOTHING)
-    result_csv = models.FileField()
-    result_pdf = models.FileField()
+    result_csv = models.FileField(null=True)
+    result_pdf = models.FileField(null=True)
     status = models.CharField(choices=STATUS_CHOICES, max_length=1)
 
     def __str__(self):
