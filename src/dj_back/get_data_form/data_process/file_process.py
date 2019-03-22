@@ -1,7 +1,7 @@
 import os
 import subprocess
 import logging
-from math import sin, cos, sqrt
+from math import sin, cos, sqrt, pi
 from statistics import mean, variance
 
 from django.conf import settings
@@ -23,6 +23,8 @@ class FileProcessing:
     E2 = 0.00669437999014
     OME2 = 0.99330562000987
     A = 6378137.0
+
+    DAY_LEN = 24 * 60 * 60
 
     GGA_LINE_TYPE = 0
     GGA_TIME = 1
@@ -58,9 +60,10 @@ class FileProcessing:
     def parse_coord(self, coord):
         coord = str(coord)
         left, right = coord.split('.')
-        right = left[-2:] + right
+        right = left[-2:] + '.' + right
         left = left[:-2]
-        return float(left) + float(right) / 60
+        grad = float(left) + float(right) / 60.0
+        return grad / 180.0 * pi
 
     def process_file(self, submission, instance):
         workdir = os.path.join(settings.MEDIA_ROOT, RESULT_STORE_FOLDER_NAME, str(submission.id))
@@ -96,12 +99,19 @@ class FileProcessing:
             ))
             return
 
+        # TODO: delete this
+        with open(os.path.join(workdir, RESULT_GGA_FILE), 'w') as ggafile:
+            ggafile.write(render_to_string('get_data_form/sample.gga'))
+
         data = []
+        fx = []
+        fy = []
+        fz = []
 
         with open(os.path.join(workdir, RESULT_GGA_FILE), 'r') as ggafile:
             for line in ggafile:
                 ggadata = line.split(',')
-                if ggadata[self.GGA_LINE_TYPE] == '$GPGGA' and ggadata[self.GGA_QUALITY] == '5':
+                if ggadata[self.GGA_LINE_TYPE] == '$GPGGA':
                     time = self.parse_time(float(ggadata[self.GGA_TIME]))
                     lat = self.parse_coord(ggadata[self.GGA_LAT])
                     if ggadata[self.GGA_LAT_SIGN] == 'S':
@@ -110,16 +120,40 @@ class FileProcessing:
                     if ggadata[self.GGA_LON_SIGN] == 'W':
                         lon *= -1
                     hgt = float(ggadata[self.GGA_HGT]) + float(ggadata[self.GGA_GEOID_SEP])
+                    # print("{}, {}, {}".format(lat, lon, hgt))
                     x, y, z = self.convert_coordinates(lat, lon, hgt)
+                    # print("{}, {}, {}".format(x, y, z))
                     sat_count = int(ggadata[self.GGA_NUM_OF_SATS])
                     data.append({'time': time, 'x': x, 'y': y, 'z': z, 'sat_count': sat_count})
+                    if ggadata[self.GGA_QUALITY] == '5':
+                        fx.append(x)
+                        fy.append(y)
+                        fz.append(z)
 
-        xavg = mean(map(lambda a: a['x'], data))
-        xcov = variance(map(lambda a: a['x'], data))
-        yavg = mean(map(lambda a: a['y'], data))
-        ycov = variance(map(lambda a: a['y'], data))
-        zavg = mean(map(lambda a: a['z'], data))
-        zcov = variance(map(lambda a: a['z'], data))
+        days = 0
+
+        xavg = mean(fx)
+        xcov = variance(fx)
+        yavg = mean(fy)
+        ycov = variance(fy)
+        zavg = mean(fz)
+        zcov = variance(fz)
+        x_min = min(map(lambda a: a['x'], data))
+        x_max = max(map(lambda a: a['x'], data))
+        y_min = min(map(lambda a: a['y'], data))
+        y_max = max(map(lambda a: a['y'], data))
+        z_min = min(map(lambda a: a['z'], data))
+        z_max = max(map(lambda a: a['z'], data))
+
+        for i in range(0, len(data)):
+            data[i]['x'] = (data[i]['x'] - x_min) / (x_max - x_min)
+            data[i]['y'] = (data[i]['y'] - y_min) / (y_max - y_min)
+            data[i]['z'] = (data[i]['z'] - z_min) / (z_max - z_min)
+            if i > 0:
+                data[i]['time'] += days * self.DAY_LEN
+                if data[i]['time'] <= data[i - 1]['time']:
+                    days += 1
+                    data[i]['time'] += self.DAY_LEN
 
         with open(os.path.join(workdir, RESULT_CSV_FILE), 'w') as csvfile:
             csvfile.write('Coordinate,E,COV\n')
@@ -136,17 +170,19 @@ class FileProcessing:
                 'ycov': ycov,
                 'zavg': zavg,
                 'zcov': zcov,
-                'sat_min': min(map(lambda a: a['sat_count'], data)),
-                'sat_max': max(map(lambda a: a['sat_count'], data)),
-                'time_min': min(map(lambda a: a['time'], data)),
-                'time_max': max(map(lambda a: a['time'], data)),
-                'x_min': min(map(lambda a: a['x'], data)),
-                'x_max': max(map(lambda a: a['x'], data)),
-                'y_min': min(map(lambda a: a['y'], data)),
-                'y_max': max(map(lambda a: a['y'], data)),
-                'z_min': min(map(lambda a: a['z'], data)),
-                'z_max': max(map(lambda a: a['z'], data)),
+                'sat_min': min(map(lambda a: a['sat_count'], data)) - 1,
+                'sat_max': max(map(lambda a: a['sat_count'], data)) + 1,
+                'time_min': min(map(lambda a: a['time'], data)) - 1,
+                'time_max': max(map(lambda a: a['time'], data)) + 1,
+                'x_min': x_min,
+                'x_max': x_max,
+                'y_min': y_min,
+                'y_max': y_max,
+                'z_min': z_min,
+                'z_max': z_max,
             })
+            with open(os.path.join(workdir, 'report.tex'), 'w') as texfile:
+                texfile.write(report)
             build_pdf(report).save_to(pdffile)
 
         instance.result_csv.name = os.path.join(RESULT_STORE_FOLDER_NAME, str(submission.id), RESULT_CSV_FILE)
