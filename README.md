@@ -17,14 +17,17 @@ g++ blackbox.cpp -o blackbox.exe
 cd -
 ```
 
-Также при первом запуске нужно обновить список антенн и создать
+Также при первом запуске нужно обновить список антенн, установить
+переменные `EMAIL_*` в `src/dj_back/dj_back/settings.py` и создать
 суперпользователя, с помощью него можно будет залогиниться:
 ```bash
 python src/dj_back/manage.py createsuperuser
 ```
  
-Теперь нужно запустить сам сервер:
+Перед запуском нужно присвоить переменной окружения `PP_SEND_EMAIL_PASSWORD`
+пароль от почты, теперь нужно запустить сам сервер:
 ```bash
+export PP_SEND_EMAIL_PASSWORD='some_pass_here'
 python src/dj_back/manage.py runserver
 ```
 
