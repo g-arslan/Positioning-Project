@@ -1,12 +1,12 @@
 {% extends 'dj_back/base.html' %}
+{% load staticfiles %}
 
 {% block title %}
-    Sign Up
+    Login
 {% endblock %}
 
 {% block baritem %}
-    <div class="w3-bar-item"><p>Sign up</p></div>
-    <a href="{% url 'login' %}" class="w3-bar-item w3-button w3-right"><p>Login</p></a>
+    <div class="w3-bar-item"><p>Login</p></div>
 {% endblock %}
 
 {% block body %}
@@ -20,7 +20,8 @@
             <form method="post" class="w3-container w3-padding-16">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit" class="w3-button w3-blue">Sign up</button>
+                <button type="submit" class="w3-button w3-blue">Login</button>
+                <a href="{% url 'signup' %}" class="w3-button w3-blue">Sign Up</a>
             </form>
             <div class="w3-container"></div>
         </div>

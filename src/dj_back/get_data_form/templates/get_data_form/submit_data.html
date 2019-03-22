@@ -5,46 +5,67 @@
     Submit
 {% endblock %}
 
-{% block body %}
-    <h2>Submit</h2>
+{% block baritem %}
+    <div class="w3-bar-item"><p>Submit</p></div>
+{% endblock %}
 
-    <form method="post" enctype="multipart/form-data">
+{% block body %}
+    <div class="w3-row">
+    <div class="w3-container w3-quarter"></div>
+    <form method="post" enctype="multipart/form-data" class="w3-container w3-center w3-half w3-mobile">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Submit</button>
+        <button type="submit" class="w3-button w3-blue">Submit</button>
     </form>
+    </div>
 
     <br>
-    <a href="{% url 'logout' %}">Logout</a>
 
     <h2>History</h2>
 
     {% load tz %}
     {% get_current_timezone as TIME_ZONE %}
 
-    <table>
-    <tr>
+    <table class="w3-table w3-striped w3-bordered w3-hoverable w3-mobile">
+    <thead>
+    <tr class="w3-blue">
         <th>Filename</th>
         <th>Time</th>
         <th>Status</th>
         <th>.csv</th>
         <th>.pdf</th>
     </tr>
+    </thead>
     {% for res in results %}
         <tr>
             <td>{{ res.submission.filename }}</td>
             <td>{{ res.submission.sub_datetime|timezone:"Europe/Moscow" }}</td>
-            <td>{{ res.status }}</td>
+            <td>
+                {% ifequal res.status "Processing" %}
+                    <div class="w3-text-orange">
+                    <i class="fa fa-refresh w3-spin"></i>
+                {% endifequal %}
+                {% ifequal res.status "Done" %}
+                    <div class="w3-text-green">
+                    <i class="fa fa-check"></i>
+                {% endifequal %}
+                {% ifequal res.status "Error" %}
+                    <div class="w3-text-red">
+                    <i class="fa fa-exclamation-triangle"></i>
+                {% endifequal %}
+                {{ res.status }}
+                </div>
+            </td>
             <td>
                 {% ifequal res.status "Done" %}
-                    <a href="{{ res.result_csv }}">get</a>
+                    <a href="{{ res.result_csv }}"><i class="fa fa-download"></i></a>
                 {% else %}
                     Not done yet
                 {% endifequal %}
             </td>
             <td>
                 {% ifequal res.status "Done" %}
-                    <a href="{{ res.result_pdf }}">get</a>
+                    <a href="{{ res.result_pdf }}"><i class="fa fa-download"></i></a>
                 {% else %}
                     Not done yet
                 {% endifequal %}

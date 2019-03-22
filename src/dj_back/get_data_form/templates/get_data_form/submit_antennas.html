@@ -5,11 +5,17 @@
     Antennas
 {% endblock %}
 
+{% block baritem %}
+    <div class="w3-bar-item"><p>Antennas</p></div>
+{% endblock %}
+
 {% block body %}
-    Внимание! После этого действия текущие антенны будут заменены.
-    <form method="post" enctype="multipart/form-data">
+    <div class="w3-panel w3-yellow w3-card-4">
+        <p>Внимание! После этого действия текущие антенны будут заменены.</p>
+    </div>
+    <form method="post" enctype="multipart/form-data" class="w3-container">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Submit</button>
+        <button type="submit" class="w3-button w3-blue">Submit</button>
     </form>
 {% endblock %}

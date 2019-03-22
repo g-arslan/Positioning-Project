@@ -19,8 +19,8 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     path('submit_data/', include('get_data_form.urls')),
-    path('users/', include('django.contrib.auth.urls')),
     path('users/', include('users.urls')),
+    path('users/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(pattern_name='submit_data')),
 ]
