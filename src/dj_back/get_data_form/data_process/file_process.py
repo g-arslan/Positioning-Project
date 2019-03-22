@@ -5,6 +5,7 @@ from math import sin, cos, sqrt, pi
 from statistics import mean, variance
 
 from django.conf import settings
+from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from latex import build_pdf
 
@@ -187,6 +188,19 @@ class FileProcessing:
 
         instance.result_csv.name = os.path.join(RESULT_STORE_FOLDER_NAME, str(submission.id), RESULT_CSV_FILE)
         instance.result_pdf.name = os.path.join(RESULT_STORE_FOLDER_NAME, str(submission.id), RESULT_PDF_FILE)
+
+        if submission.send_email_flag:
+            email = EmailMessage(
+                'Position calculation results',
+                'Your results:',
+                settings.EMAIL_HOST_USER + '@' + settings.EMAIL_HOST_SERVICE,
+                [submission.user.email],
+            )
+            email.content_subtype = 'html'
+            email.attach_file(os.path.join(workdir, RESULT_CSV_FILE))
+            email.attach_file(os.path.join(workdir, RESULT_PDF_FILE))
+            email.send()
+
         instance.status = Result.DONE
         instance.save()
 

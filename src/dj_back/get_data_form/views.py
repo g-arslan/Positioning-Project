@@ -26,6 +26,7 @@ def submit_data(request):
                 antenna=form.cleaned_data['antenna'].name,
                 data_file=request.FILES['data_file'],
                 filename=os.path.basename(request.FILES['data_file'].name),
+                send_email_flag=form.cleaned_data['send_email_flag'],
             )
             request.user.submissions_count += 1
             request.user.save()

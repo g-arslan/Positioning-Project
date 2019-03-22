@@ -31,6 +31,13 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'submit_data'
 LOGOUT_REDIRECT_URL = 'login'
 
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'prochekat'
+EMAIL_HOST_SERVICE = 'yandex.ru'
+EMAIL_HOST_PASSWORD = os.environ['PP_SEND_EMAIL_PASSWORD']
+EMAIL_USE_SSL = True
+
 AUTH_USER_MODEL = 'users.CustomUser'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

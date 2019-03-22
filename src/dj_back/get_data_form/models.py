@@ -29,6 +29,7 @@ class Submission(models.Model):
     sub_datetime = models.DateTimeField()
     data_file = models.FileField(upload_to=data_file_name, verbose_name='File with data')
     filename = models.CharField(max_length=256)
+    send_email_flag = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['sub_datetime']
